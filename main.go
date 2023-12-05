@@ -10,7 +10,6 @@ import (
 
 	"github.com/epsilondylan/blockchain/common"
 	pto "github.com/epsilondylan/blockchain/protocal"
-	"github.com/epsilondylan/blockchain/server"
 )
 
 func main() {
