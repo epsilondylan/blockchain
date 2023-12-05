@@ -8,7 +8,11 @@ import (
 	"time"
 
 	dhash "github.com/epsilondylan/blockchain/hash"
+<<<<<<< HEAD
 	p2p "github.com/epsilondylan/pheromones"
+=======
+	p2p "github.com/epsilondylan/distributedOS/pheromones"
+>>>>>>> 6184c3173742a446ea79973f779ecb5fb37b4aa6
 
 	"github.com/epsilondylan/blockchain/common"
 	"github.com/epsilondylan/blockchain/models"

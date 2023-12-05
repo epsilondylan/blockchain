@@ -8,9 +8,14 @@ import (
 
 	"flag"
 
+<<<<<<< HEAD
 	"github.com/Blockchain-CN/blockchain/common"
 	pto "github.com/Blockchain-CN/blockchain/protocal"
 	"github.com/Blockchain-CN/blockchain/server"
+=======
+	"github.com/epsilondylan/blockchain/common"
+	pto "github.com/epsilondylan/blockchain/protocal"
+>>>>>>> 6184c3173742a446ea79973f779ecb5fb37b4aa6
 )
 
 func main() {
