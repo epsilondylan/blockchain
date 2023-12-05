@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	p2p "github.com/epsilondylan/pheromones"
+	p2p "github.com/epsilondylan/distributedOS/pheromones"
 
 	idl "github.com/epsilondylan/blockchain/idls/create"
 	"github.com/epsilondylan/blockchain/models"
