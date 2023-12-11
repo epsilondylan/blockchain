@@ -1,14 +1,51 @@
-package models
+package create
 
 import (
-	"fmt"
-	"testing"
+	"github.com/epsilondylan/blockchain/common"
+	pto "github.com/epsilondylan/blockchain/protocal"
 )
+// CRequest request struct
+type CRequest struct {
+	Name string `json:"name"`
+	Data string `json:"data"`
+}
 
-func TestLogin(t *testing.T) {
-	u, err := Login("luda")
-	if err != nil {
-		t.FailNow()
-	}
-	fmt.Printf("%v", u)
+// NewCRequestIDL ...
+func NewCRequestIDL() *CRequest {
+	return &CRequest{}
+}
+
+// CResponse response struct
+type CResponse struct {
+	Errno int    `json:"errno"`
+	Msg   string `json:"msg"`
+}
+
+// NewCResponseIDL ...
+func NewCResponseIDL() *CResponse {
+	return &CResponse{}
+}
+
+func GenerateBlock(req *idl.CRequest) *idl.CResponse {
+	resp := idlNewCResponseIDL()
+	resp.Errno = common.Success
+	resp.Msg = common.ErrMap[common.Success]
+	pto.DataQueue <- req
+	return resp
+}
+
+
+// CController ...
+type CController struct {
+}
+
+// GenIdl ...
+func (c *CController) GenIdl() interface{} {
+	return NewCRequestIDL()
+}
+
+// Do ...
+func (c *CController) Do(req interface{}) interface{} {
+	r := req.(*CRequest)
+	return handler.GenerateBlock(r)
 }

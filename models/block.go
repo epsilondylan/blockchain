@@ -23,9 +23,9 @@ type Block struct {
 
 // FormatBlock Format received []byte to a block object.
 func FormatBlock(b []byte) (*Block, error) {
-	block := &Block{}
-	err := json.Unmarshal(b, block)
-	if err != nil {
+	block := &Block{}// 区块
+	err := json.Unmarshal(b, block)// 解析
+	if err != nil {// 解析失败
 		return nil, err
 	}
 	return block, nil
@@ -34,12 +34,12 @@ func FormatBlock(b []byte) (*Block, error) {
 // GenerateBlock Generate a new block, it takes sometime and can be stopped by using the following function.
 // hash = PVHash+Timestamp+Data+n+Nonce.
 func GenerateBlock(pvHash, data string, index int64) *Block {
-	var metaData string
-	time := time.Now().UnixNano()
-	tStr := strconv.FormatInt(time, 10)
-	nStr := strconv.FormatInt(index, 10)
-	metaData = pvHash + tStr + data + nStr
-	hash, nonce := dhash.HashwithDifficulty([]byte(metaData), common.HashDifficulty)
+	var metaData string // 元数据（用于处理）
+	time := time.Now().UnixNano()// 时间戳
+	tStr := strconv.FormatInt(time, 10)// 时间戳字符串
+	nStr := strconv.FormatInt(index, 10)// index字符串
+	metaData = pvHash + tStr + data + nStr// 元数据的字符串
+	hash, nonce := dhash.HashwithDifficulty([]byte(metaData), common.HashDifficulty)// 计算hash
 	return &Block{
 		PVHash:    pvHash,
 		Timestamp: time,
@@ -50,33 +50,38 @@ func GenerateBlock(pvHash, data string, index int64) *Block {
 	}
 }
 
+// Interupt stop calculating hash for the block.
+func (b *Block) Interupt() bool {// 中断
+	return dhash.StopHash()// 停止计算
+}
+
 // IsValid return if the block is legal.
-func (b *Block) IsValid(pvb *Block) bool {
-	var metaData string
-	if b.PVHash != pvb.Hash || (pvb.Index+1) != b.Index {
+func (b *Block) IsValid(pvb *Block) bool {// 是否合法
+	var metaData string// 元数据
+	if b.PVHash != pvb.Hash || (pvb.Index+1) != b.Index {// 判断前后区块是否合法
 		return false
 	}
 	//check the validity of the trans data
-	t, err := FormatTrans([]byte(b.Data))
-	if err != nil {
-		return false
+	t, err := FormatTrans([]byte(b.Data))// 解析交易
+	if err != nil {		
+		return false// 解析失败
 	}
-	err = t.IsVaild()
+	err = t.IsVaild()// 判断交易是否合法
 	if err != nil {
-		return false
+		return false// 不合法
 	}
-	tStr := strconv.FormatInt(b.Timestamp, 10)
-	nStr := strconv.FormatInt(b.Index, 10)
+	tStr := strconv.FormatInt(b.Timestamp, 10)// 时间戳字符串
+	nStr := strconv.FormatInt(b.Index, 10)// index字符串
 	noStr := strconv.FormatInt(b.Nonce, 10)
 	metaData = b.PVHash + tStr + b.Data + nStr
-	return dhash.Verification(append([]byte(metaData), []byte(noStr)...), b.Hash)
+	return dhash.Verification(append([]byte(metaData), []byte(noStr)...), b.Hash)// 验证hash
 }
 
 // IsTempValid return if the block is temporary legal.
-func (b *Block) IsTempValid() bool {
-	var metaData string
+func (b *Block) IsTempValid() bool {// 是否临时合法
+	var metaData string// 元数据
 	//check the validity of the trans data
-	t, err := FormatTrans([]byte(b.Data))
+	t, err := FormatTrans([]byte(b.Data))// 解析交易
 	if err != nil {
 		return false
 	}

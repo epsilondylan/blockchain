@@ -6,20 +6,34 @@ import (
 	"sync"
 	"time"
 
-<<<<<<< HEAD
 	p2p "github.com/epsilondylan/pheromones"
-=======
-	p2p "github.com/epsilondylan/distributedOS/pheromones"
->>>>>>> 6184c3173742a446ea79973f779ecb5fb37b4aa6
-
-	idl "github.com/epsilondylan/blockchain/idls/create"
 	"github.com/epsilondylan/blockchain/models"
 )
+// CRequest request struct
+type CRequest struct {
+	Name string `json:"name"`
+	Data string `json:"data"`
+}
 
+// NewCRequestIDL ...
+func NewCRequestIDL() *CRequest {
+	return &CRequest{}
+}
+
+// CResponse response struct
+type CResponse struct {
+	Errno int    `json:"errno"`
+	Msg   string `json:"msg"`
+}
+
+// NewCResponseIDL ...
+func NewCResponseIDL() *CResponse {
+	return &CResponse{}
+}
 var (
 	singleton *Protocal
 	// DataQueue data channel
-	DataQueue chan *idl.CRequest
+	DataQueue chan *CRequest
 	wg        sync.WaitGroup
 	hostAddr  string
 )
@@ -35,7 +49,7 @@ func InitPto(addr string, to time.Duration) {
 	p1 := NewProtocal(addr, r1, to)
 	s1 := p2p.NewServer(p1, to)
 	singleton = p1
-	DataQueue = make(chan *idl.CRequest, 100)
+	DataQueue = make(chan *CRequest, 100)
 	println("P2P Servering on ", addr)
 	go BlockPublisher()
 	go s1.ListenAndServe(addr)

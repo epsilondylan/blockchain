@@ -2,7 +2,6 @@ package models
 
 import (
 	"encoding/json"
-
 	"github.com/epsilondylan/blockchain/keygen"
 )
 
