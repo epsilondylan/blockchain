@@ -5,7 +5,7 @@ import (
 	pto "github.com/epsilondylan/blockchain/protocal"
 )
 
-func AddPeer(req JRequest) JResponse {
+func AddPeer(req *JRequest) *JResponse {
 	resp := NewJResponse()
 	resp.Errno = common.Success
 	resp.Msg = common.ErrMap[common.Success]
@@ -36,6 +36,7 @@ type JResponse struct {
 func NewJResponse() *JResponse {
 	return &JResponse{}
 }
+
 // JController ...
 type JController struct {
 }

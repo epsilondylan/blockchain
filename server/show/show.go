@@ -1,6 +1,7 @@
 package show
 
 import (
+	models "github.com/epsilondylan/blockchain/models"
 	pto "github.com/epsilondylan/blockchain/protocal"
 )
 
@@ -10,23 +11,23 @@ type SController struct {
 
 // GenIdl ...
 func (c *SController) GenIdl() interface{} {
-	return idl.NewJRequest()
+	return NewJRequest()
 }
 
 // Do ...
 func (c *SController) Do(req interface{}) interface{} {
-	r := req.(*idl.SRequest)
-	return handler.Show(r)
+	r := req.(*SRequest)
+	return Show(r)
 }
 
 type result struct {
-
 }
-//idls
+
+// idls
 // JRequest request struct
 type SRequest struct {
-	Chain	bool	`json:"chain"`
-	Peer 	bool	`json:"peer"`
+	Chain bool `json:"chain"`
+	Peer  bool `json:"peer"`
 }
 
 // NewJRequest ...
@@ -36,16 +37,17 @@ func NewJRequest() *SRequest {
 
 // JResponse response struct
 type SResponse struct {
-	Chain  interface{}	`json:"chain"`
-	Peer   interface{}	`json:"peer"`
+	Chain interface{} `json:"chain"`
+	Peer  interface{} `json:"peer"`
 }
 
 // NewJResponse ...
 func NewJResponse() *SResponse {
 	return &SResponse{}
 }
+
 // Show join to the blockchain system by connect to a peer
-func Show(req *idl.SRequest) *idl.SResponse {
+func Show(req *SRequest) *SResponse {
 	resp := NewJResponse()
 	single := pto.GetProtocal()
 	if req.Chain {

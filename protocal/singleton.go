@@ -6,9 +6,10 @@ import (
 	"sync"
 	"time"
 
-	p2p "github.com/epsilondylan/pheromones"
 	"github.com/epsilondylan/blockchain/models"
+	p2p "github.com/epsilondylan/pheromones"
 )
+
 // CRequest request struct
 type CRequest struct {
 	Name string `json:"name"`
@@ -30,6 +31,7 @@ type CResponse struct {
 func NewCResponseIDL() *CResponse {
 	return &CResponse{}
 }
+
 var (
 	singleton *Protocal
 	// DataQueue data channel
@@ -40,6 +42,10 @@ var (
 
 func GetProtocal() *Protocal {
 	return singleton
+}
+
+func DataQueueAppend(req *CRequest) {
+	DataQueue <- req
 }
 
 // InitPto init the default protocal object

@@ -4,6 +4,7 @@ import (
 	"github.com/epsilondylan/blockchain/common"
 	pto "github.com/epsilondylan/blockchain/protocal"
 )
+
 // CRequest request struct
 type CRequest struct {
 	Name string `json:"name"`
@@ -26,14 +27,13 @@ func NewCResponseIDL() *CResponse {
 	return &CResponse{}
 }
 
-func GenerateBlock(req *idl.CRequest) *idl.CResponse {
-	resp := idlNewCResponseIDL()
+func GenerateBlock(req *CRequest) *CResponse {
+	resp := NewCResponseIDL()
 	resp.Errno = common.Success
 	resp.Msg = common.ErrMap[common.Success]
-	pto.DataQueue <- req
+	pto.DataQueueAppend(req)
 	return resp
 }
-
 
 // CController ...
 type CController struct {
