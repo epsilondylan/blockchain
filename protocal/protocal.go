@@ -14,6 +14,7 @@ import (
 	"github.com/epsilondylan/blockchain/models"
 )
 
+
 const (
 	// RequireBlock 请求最新block
 	RequireBlock = "require a block"
@@ -230,5 +231,7 @@ func (p *Protocal) spreadShort(reqStr []byte, peerList map[string]interface{}) {
 	}
 	wg.Wait()
 }
+
+
 
 
