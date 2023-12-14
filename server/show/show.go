@@ -5,6 +5,7 @@ import (
 	pto "github.com/epsilondylan/blockchain/protocal"
 )
 
+
 // JController ...
 type SController struct {
 }
