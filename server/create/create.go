@@ -5,15 +5,11 @@ import (
 	pto "github.com/epsilondylan/blockchain/protocal"
 )
 
-// CRequest request struct
-type CRequest struct {
-	Name string `json:"name"`
-	Data string `json:"data"`
-}
+
 
 // NewCRequestIDL ...
-func NewCRequestIDL() *CRequest {
-	return &CRequest{}
+func NewCRequestIDL() *pto.CRequest {
+	return &pto.CRequest{}
 }
 
 // CResponse response struct
@@ -23,11 +19,11 @@ type CResponse struct {
 }
 
 // NewCResponseIDL ...
-func NewCResponseIDL() *CResponse {
-	return &CResponse{}
+func NewCResponseIDL() *pto.CResponse {
+	return &pto.CResponse{}
 }
 
-func GenerateBlock(req *CRequest) *CResponse {
+func GenerateBlock(req *pto.CRequest) *pto.CResponse {
 	resp := NewCResponseIDL()
 	resp.Errno = common.Success
 	resp.Msg = common.ErrMap[common.Success]
@@ -46,6 +42,6 @@ func (c *CController) GenIdl() interface{} {
 
 // Do ...
 func (c *CController) Do(req interface{}) interface{} {
-	r := req.(*CRequest)
+	r := req.(*pto.CRequest)
 	return handler.GenerateBlock(r)
 }
