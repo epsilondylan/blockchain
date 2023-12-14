@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 	"sync"
-
+	"encoding/json"
 	"github.com/epsilondylan/blockchain/common"
 	"github.com/epsilondylan/blockchain/models"
 	pto "github.com/epsilondylan/blockchain/protocal"
@@ -15,21 +15,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/grpc"
 )
-package main
 
-import (
-	"context"
-	"log"
-	"net"
-	"sync"
-    "encoding/json"
-	"github.com/epsilondylan/blockchain/common"
-	"github.com/epsilondylan/blockchain/models"
-	pto "github.com/epsilondylan/blockchain/protocal"
-	"github.com/epsilondylan/service"
-
-	"google.golang.org/grpc"
-)
 
 var wg sync.WaitGroup
 
