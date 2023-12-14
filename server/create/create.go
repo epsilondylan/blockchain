@@ -43,5 +43,5 @@ func (c *CController) GenIdl() interface{} {
 // Do ...
 func (c *CController) Do(req interface{}) interface{} {
 	r := req.(*pto.CRequest)
-	return handler.GenerateBlock(r)
+	return GenerateBlock(r)
 }
