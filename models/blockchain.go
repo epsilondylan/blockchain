@@ -22,7 +22,7 @@ func init() {
 	Genesis := &Block{
 		PVHash: "0",
 		Timestamp: 0,
-		Data: "This is Genesis Block, Copyright Belong to Blockchain-CN",
+		Data: "This is Genesis Block",
 		Index: 0,
 		Nonce: 0,
 		Hash: "0"}
