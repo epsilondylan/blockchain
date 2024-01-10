@@ -1,0 +1,38 @@
+syntax = "proto3";
+package p2p;
+option go_package = "/p2p_proto";
+
+message Block{
+    string PVHash = 1;
+    int64 Timestamp = 2;
+    string Data = 3;
+    int64 Index = 4;
+    int64 Nonce = 5;
+    string Hash = 6;
+}
+
+message Transaction{
+    string Transaction=1;
+}
+
+message BlockChain{
+    repeated Block Chain = 1;
+}
+
+message TailBlockRequest{}
+
+message DeliverBlockChainResponse{}
+
+message NewTransactionResponse{}
+
+message NewBlockResponse{
+    bool ChainNeedUpdate = 1;
+}
+
+
+service P2P{
+    rpc RequestTailBlock(TailBlockRequest) returns(Block){}
+    rpc DeliverBlockChain(BlockChain) returns(DeliverBlockChainResponse){}
+    rpc NewBlock(Block) returns (NewBlockResponse){}
+    rpc NewTransaction(Transaction) returns(NewTransactionResponse){}
+}
