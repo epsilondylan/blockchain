@@ -10,6 +10,9 @@ import (
 
     "github.com/epsilondylan/blockchain/common"
     "github.com/epsilondylan/blockchain/models"
-    
+    pto "github.com/epsilondylan/blockchain/proto"
 )
 
+type P2P_Server struct {
+    pto.UnimplementedP2PServer
+}

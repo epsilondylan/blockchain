@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v3.6.1
-// source: p2p_protocol.proto
+// source: proto/p2p_protocol.proto
 
 package p2p_proto
 
@@ -32,7 +32,7 @@ type P2PClient interface {
 	RequestTailBlock(ctx context.Context, in *TailBlockRequest, opts ...grpc.CallOption) (*Block, error)
 	DeliverBlockChain(ctx context.Context, in *BlockChain, opts ...grpc.CallOption) (*DeliverBlockChainResponse, error)
 	NewBlock(ctx context.Context, in *Block, opts ...grpc.CallOption) (*NewBlockResponse, error)
-	NewTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*NewTransactionResponse, error)
+	NewTransaction(ctx context.Context, in *Trans, opts ...grpc.CallOption) (*NewTransactionResponse, error)
 }
 
 type p2PClient struct {
@@ -70,7 +70,7 @@ func (c *p2PClient) NewBlock(ctx context.Context, in *Block, opts ...grpc.CallOp
 	return out, nil
 }
 
-func (c *p2PClient) NewTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*NewTransactionResponse, error) {
+func (c *p2PClient) NewTransaction(ctx context.Context, in *Trans, opts ...grpc.CallOption) (*NewTransactionResponse, error) {
 	out := new(NewTransactionResponse)
 	err := c.cc.Invoke(ctx, P2P_NewTransaction_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -86,7 +86,7 @@ type P2PServer interface {
 	RequestTailBlock(context.Context, *TailBlockRequest) (*Block, error)
 	DeliverBlockChain(context.Context, *BlockChain) (*DeliverBlockChainResponse, error)
 	NewBlock(context.Context, *Block) (*NewBlockResponse, error)
-	NewTransaction(context.Context, *Transaction) (*NewTransactionResponse, error)
+	NewTransaction(context.Context, *Trans) (*NewTransactionResponse, error)
 	mustEmbedUnimplementedP2PServer()
 }
 
@@ -103,7 +103,7 @@ func (UnimplementedP2PServer) DeliverBlockChain(context.Context, *BlockChain) (*
 func (UnimplementedP2PServer) NewBlock(context.Context, *Block) (*NewBlockResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewBlock not implemented")
 }
-func (UnimplementedP2PServer) NewTransaction(context.Context, *Transaction) (*NewTransactionResponse, error) {
+func (UnimplementedP2PServer) NewTransaction(context.Context, *Trans) (*NewTransactionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewTransaction not implemented")
 }
 func (UnimplementedP2PServer) mustEmbedUnimplementedP2PServer() {}
@@ -174,7 +174,7 @@ func _P2P_NewBlock_Handler(srv interface{}, ctx context.Context, dec func(interf
 }
 
 func _P2P_NewTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Transaction)
+	in := new(Trans)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -186,7 +186,7 @@ func _P2P_NewTransaction_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: P2P_NewTransaction_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(P2PServer).NewTransaction(ctx, req.(*Transaction))
+		return srv.(P2PServer).NewTransaction(ctx, req.(*Trans))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -216,5 +216,5 @@ var P2P_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "p2p_protocol.proto",
+	Metadata: "proto/p2p_protocol.proto",
 }

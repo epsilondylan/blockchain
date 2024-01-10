@@ -5,21 +5,18 @@ import (
 	"encoding/json"
 	"sync"
 
+	pto "github.com/epsilondylan/blockchain/proto"
+
 	"github.com/epsilondylan/blockchain/common"
 )
 
 var lock sync.Mutex
 
-// TheChain BlockChain struct.
-type TheChain struct {
-	Chain []*Block `json:"chain"`
-}
-
-var singleChain *TheChain
+var singleChain *pto.BlockChain
 
 func init() {
 	singleChain = newChain()
-	Genesis := &Block{
+	Genesis := &pto.Block{
 		PVHash: "0",
 		Timestamp: 0,
 		Data: "This is Genesis Block",
@@ -29,14 +26,14 @@ func init() {
 	singleChain.Chain = append(singleChain.Chain, Genesis)
 }
 
-func newChain() *TheChain {
-	theChain := make([]*Block, 0)
-	return &TheChain{theChain}
+func newChain() *pto.BlockChain {
+	theChain := make([]*pto.Block, 0)
+	return &pto.BlockChain{theChain}
 }
 
 // FormatChain format received []byte to a blockchain object.
-func FormatChain(b []byte) (*TheChain, error) {
-	c := &TheChain{}
+func FormatChain(b []byte) (*pto.BlockChain, error) {
+	c := &pto.BlockChain{}
 	err := json.Unmarshal(b, c)
 	if err != nil {
 		return nil, err
@@ -45,7 +42,7 @@ func FormatChain(b []byte) (*TheChain, error) {
 }
 
 // AppendChain append a valid block to the chain's tail.
-func AppendChain(b *Block) error {
+func AppendChain(b *pto.Block) error {
 	lock.Lock()
 	defer lock.Unlock()
 	if !b.IsValid(GetChainTail()) {
@@ -56,12 +53,12 @@ func AppendChain(b *Block) error {
 }
 
 // FetchChain fetch the whole chain.
-func FetchChain() *TheChain {
+func FetchChain() *pto.BlockChain {
 	return singleChain
 }
 
 // GetChainTail get the tail block of the chain.
-func GetChainTail() *Block {
+func GetChainTail() *pto.Block {
 	return singleChain.Chain[GetChainLen()-1]
 }
 
@@ -71,7 +68,7 @@ func GetChainLen() int64 {
 }
 
 // ReplaceChain replace the chain by a longer valid chain.
-func ReplaceChain(c2 *TheChain) error {
+func ReplaceChain(c2 *pto.BlockChain) error {
 	lock.Lock()
 	defer lock.Unlock()
 	if int64(len(c2.Chain)) <= GetChainLen() {

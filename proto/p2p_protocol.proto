@@ -11,8 +11,10 @@ message Block{
     string Hash = 6;
 }
 
-message Transaction{
-    string Transaction=1;
+message Trans{
+    string Account=1;
+    string Cipher=2;
+    string Transaction=3;
 }
 
 message BlockChain{
@@ -34,5 +36,5 @@ service P2P{
     rpc RequestTailBlock(TailBlockRequest) returns(Block){}
     rpc DeliverBlockChain(BlockChain) returns(DeliverBlockChainResponse){}
     rpc NewBlock(Block) returns (NewBlockResponse){}
-    rpc NewTransaction(Transaction) returns(NewTransactionResponse){}
+    rpc NewTransaction(Trans) returns(NewTransactionResponse){}
 }
