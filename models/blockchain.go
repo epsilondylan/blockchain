@@ -14,7 +14,7 @@ var lock sync.Mutex
 
 var singleChain *pto.BlockChain
 
-func init() {
+func CreateChain() {
 	singleChain = newChain()
 	Genesis := &pto.Block{
 		PVHash: "0",

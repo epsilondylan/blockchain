@@ -23,7 +23,7 @@ const (
 	P2P_UpdateBlockChain_FullMethodName = "/p2p.P2P/UpdateBlockChain"
 	P2P_NewBlock_FullMethodName         = "/p2p.P2P/NewBlock"
 	P2P_NewTransaction_FullMethodName   = "/p2p.P2P/NewTransaction"
-	P2P_RequestPeerList_FullMethodName  = "/p2p.P2P/RequestPeerList"
+	P2P_NewPeer_FullMethodName          = "/p2p.P2P/NewPeer"
 )
 
 // P2PClient is the client API for P2P service.
@@ -34,7 +34,7 @@ type P2PClient interface {
 	UpdateBlockChain(ctx context.Context, in *BlockChain, opts ...grpc.CallOption) (*UpdateBlockChainResponse, error)
 	NewBlock(ctx context.Context, in *Block, opts ...grpc.CallOption) (*NewBlockResponse, error)
 	NewTransaction(ctx context.Context, in *Trans, opts ...grpc.CallOption) (*NewTransactionResponse, error)
-	RequestPeerList(ctx context.Context, in *PeerList, opts ...grpc.CallOption) (*PeerList, error)
+	NewPeer(ctx context.Context, in *Peer, opts ...grpc.CallOption) (*PeerList, error)
 }
 
 type p2PClient struct {
@@ -81,9 +81,9 @@ func (c *p2PClient) NewTransaction(ctx context.Context, in *Trans, opts ...grpc.
 	return out, nil
 }
 
-func (c *p2PClient) RequestPeerList(ctx context.Context, in *PeerList, opts ...grpc.CallOption) (*PeerList, error) {
+func (c *p2PClient) NewPeer(ctx context.Context, in *Peer, opts ...grpc.CallOption) (*PeerList, error) {
 	out := new(PeerList)
-	err := c.cc.Invoke(ctx, P2P_RequestPeerList_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, P2P_NewPeer_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +98,7 @@ type P2PServer interface {
 	UpdateBlockChain(context.Context, *BlockChain) (*UpdateBlockChainResponse, error)
 	NewBlock(context.Context, *Block) (*NewBlockResponse, error)
 	NewTransaction(context.Context, *Trans) (*NewTransactionResponse, error)
-	RequestPeerList(context.Context, *PeerList) (*PeerList, error)
+	NewPeer(context.Context, *Peer) (*PeerList, error)
 	mustEmbedUnimplementedP2PServer()
 }
 
@@ -118,8 +118,8 @@ func (UnimplementedP2PServer) NewBlock(context.Context, *Block) (*NewBlockRespon
 func (UnimplementedP2PServer) NewTransaction(context.Context, *Trans) (*NewTransactionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewTransaction not implemented")
 }
-func (UnimplementedP2PServer) RequestPeerList(context.Context, *PeerList) (*PeerList, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RequestPeerList not implemented")
+func (UnimplementedP2PServer) NewPeer(context.Context, *Peer) (*PeerList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewPeer not implemented")
 }
 func (UnimplementedP2PServer) mustEmbedUnimplementedP2PServer() {}
 
@@ -206,20 +206,20 @@ func _P2P_NewTransaction_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _P2P_RequestPeerList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(PeerList)
+func _P2P_NewPeer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Peer)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(P2PServer).RequestPeerList(ctx, in)
+		return srv.(P2PServer).NewPeer(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: P2P_RequestPeerList_FullMethodName,
+		FullMethod: P2P_NewPeer_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(P2PServer).RequestPeerList(ctx, req.(*PeerList))
+		return srv.(P2PServer).NewPeer(ctx, req.(*Peer))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -248,8 +248,8 @@ var P2P_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _P2P_NewTransaction_Handler,
 		},
 		{
-			MethodName: "RequestPeerList",
-			Handler:    _P2P_RequestPeerList_Handler,
+			MethodName: "NewPeer",
+			Handler:    _P2P_NewPeer_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

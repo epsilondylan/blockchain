@@ -40,6 +40,10 @@ message PeerList{
     repeated Peer Peers = 1;
 }
 
+message TransPool{
+    repeated Trans TransPool = 1;
+}
+
 
 service P2P{
     rpc RequestTailBlock(TailBlockRequest) returns(Block){}

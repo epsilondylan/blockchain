@@ -14,13 +14,13 @@ func (t *pto.Trans) IsVaild() error {
 }
 
 // FormatTrans format []byte to a trans object.
-func FormatTrans(b []byte) (*pto.Trans, error) {
-	trans := &pto.Trans{}
-	err := json.Unmarshal(b, trans)
+func FormatTrans(b []byte) (*pto.TransPool,err) {
+	transpool := &pto.TransPool{}
+	err := json.Unmarshal(b, transpool)
 	if err != nil {
 		return nil, err
 	}
-	return trans, nil
+	return transpool, nil
 }
 
 // GenerateTransWithID generate a trans using user's ID.
