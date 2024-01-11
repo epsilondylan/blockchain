@@ -1,19 +1,14 @@
-package miner
+package main
 
 
 import(
     "encoding/json"
     "fmt"
-    "sync"
-    "time"
-    "context"
-    "io/ioutil"
+    "log"
+    "blockchain/models"
+    "net"
 
-    dhash "github.com/epsilondylan/blockchain/hash"
-    "github.com/epsilondylan/blockchain/common"
-    "github.com/epsilondylan/blockchain/models"
-    pto "github.com/epsilondylan/blockchain/proto"
-    p2p "github.com/epsilondylan/blockchain/p2p"
+    p2p "blockchain/p2p"
     "google.golang.org/grpc"
 
 )
@@ -24,7 +19,9 @@ func Mine(Server *p2p.P2P_Server){
         var transstring string
         //一次最多十条交易，也可以优化
         for i := 0; i < 10; i++ {
-            case trans <- Server.NewTrans:
+            select {
+
+            case trans := <- Server.NewTrans:
                  temp,err:=json.Marshal(trans)
                  if err!=nil{
                     return
@@ -32,15 +29,16 @@ func Mine(Server *p2p.P2P_Server){
                 transstring+=string(temp)
             default:
                 break
+            }
         }
         //生成区块
-        block := models.GenerateBlock(models.GetChainTail().Hash, transStr, models.GetChainLen())
+        block := models.GenerateBlock(models.GetChainTail().Hash, transstring, models.GetChainLen())
         err:=models.AppendChain(block)
         if err == nil{
             //广播区块
-            Server.BroadcastBlock(block)
+            Server.Broadcast(block)
             //将区块写入本地
-            err1:=SaveChainToLocal()
+            err1:=Server.SaveChainToLocal()
             if err1!=nil{
                 fmt.Println(err1)
             }
@@ -51,12 +49,13 @@ func Mine(Server *p2p.P2P_Server){
 func main(){
     //初始化
     Server:=new(p2p.P2P_Server)
+    Server.Init()
     lis, err := net.Listen("tcp", ":1230")
     if err != nil {
         log.Fatalf("failed to listen: %v", err)
     }
     s := grpc.NewServer()
-    pto.RegisterP2PServer(s, Server)
+    models.RegisterP2PServer(s, Server)
     go Server.SetupConnections()
     go Mine(Server)
     if err := s.Serve(lis); err != nil {

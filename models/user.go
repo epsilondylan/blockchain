@@ -3,9 +3,9 @@ package models
 import (
 	"path"
 
-	"github.com/epsilondylan/blockchain/keygen"
+	"blockchain/keygen"
 
-	"github.com/epsilondylan/blockchain/common"
+	"blockchain/common"
 )
 
 // User struct.
