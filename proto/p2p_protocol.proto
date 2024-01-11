@@ -23,7 +23,7 @@ message BlockChain{
 
 message TailBlockRequest{}
 
-message DeliverBlockChainResponse{}
+message UpdateBlockChainResponse{}
 
 message NewTransactionResponse{}
 
@@ -31,10 +31,20 @@ message NewBlockResponse{
     bool ChainNeedUpdate = 1;
 }
 
+message Peer{
+    string IP = 1;
+    int32 Port = 2;
+}
+
+message PeerList{
+    repeated Peer Peers = 1;
+}
+
 
 service P2P{
     rpc RequestTailBlock(TailBlockRequest) returns(Block){}
-    rpc DeliverBlockChain(BlockChain) returns(DeliverBlockChainResponse){}
+    rpc UpdateBlockChain(BlockChain) returns(UpdateBlockChainResponse){}
     rpc NewBlock(Block) returns (NewBlockResponse){}
     rpc NewTransaction(Trans) returns(NewTransactionResponse){}
+    rpc NewPeer(Peer) returns(PeerList){}
 }

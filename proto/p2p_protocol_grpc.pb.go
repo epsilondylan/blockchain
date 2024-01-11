@@ -19,10 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	P2P_RequestTailBlock_FullMethodName  = "/p2p.P2P/RequestTailBlock"
-	P2P_DeliverBlockChain_FullMethodName = "/p2p.P2P/DeliverBlockChain"
-	P2P_NewBlock_FullMethodName          = "/p2p.P2P/NewBlock"
-	P2P_NewTransaction_FullMethodName    = "/p2p.P2P/NewTransaction"
+	P2P_RequestTailBlock_FullMethodName = "/p2p.P2P/RequestTailBlock"
+	P2P_UpdateBlockChain_FullMethodName = "/p2p.P2P/UpdateBlockChain"
+	P2P_NewBlock_FullMethodName         = "/p2p.P2P/NewBlock"
+	P2P_NewTransaction_FullMethodName   = "/p2p.P2P/NewTransaction"
+	P2P_RequestPeerList_FullMethodName  = "/p2p.P2P/RequestPeerList"
 )
 
 // P2PClient is the client API for P2P service.
@@ -30,9 +31,10 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type P2PClient interface {
 	RequestTailBlock(ctx context.Context, in *TailBlockRequest, opts ...grpc.CallOption) (*Block, error)
-	DeliverBlockChain(ctx context.Context, in *BlockChain, opts ...grpc.CallOption) (*DeliverBlockChainResponse, error)
+	UpdateBlockChain(ctx context.Context, in *BlockChain, opts ...grpc.CallOption) (*UpdateBlockChainResponse, error)
 	NewBlock(ctx context.Context, in *Block, opts ...grpc.CallOption) (*NewBlockResponse, error)
 	NewTransaction(ctx context.Context, in *Trans, opts ...grpc.CallOption) (*NewTransactionResponse, error)
+	RequestPeerList(ctx context.Context, in *PeerList, opts ...grpc.CallOption) (*PeerList, error)
 }
 
 type p2PClient struct {
@@ -52,9 +54,9 @@ func (c *p2PClient) RequestTailBlock(ctx context.Context, in *TailBlockRequest, 
 	return out, nil
 }
 
-func (c *p2PClient) DeliverBlockChain(ctx context.Context, in *BlockChain, opts ...grpc.CallOption) (*DeliverBlockChainResponse, error) {
-	out := new(DeliverBlockChainResponse)
-	err := c.cc.Invoke(ctx, P2P_DeliverBlockChain_FullMethodName, in, out, opts...)
+func (c *p2PClient) UpdateBlockChain(ctx context.Context, in *BlockChain, opts ...grpc.CallOption) (*UpdateBlockChainResponse, error) {
+	out := new(UpdateBlockChainResponse)
+	err := c.cc.Invoke(ctx, P2P_UpdateBlockChain_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -79,14 +81,24 @@ func (c *p2PClient) NewTransaction(ctx context.Context, in *Trans, opts ...grpc.
 	return out, nil
 }
 
+func (c *p2PClient) RequestPeerList(ctx context.Context, in *PeerList, opts ...grpc.CallOption) (*PeerList, error) {
+	out := new(PeerList)
+	err := c.cc.Invoke(ctx, P2P_RequestPeerList_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // P2PServer is the server API for P2P service.
 // All implementations must embed UnimplementedP2PServer
 // for forward compatibility
 type P2PServer interface {
 	RequestTailBlock(context.Context, *TailBlockRequest) (*Block, error)
-	DeliverBlockChain(context.Context, *BlockChain) (*DeliverBlockChainResponse, error)
+	UpdateBlockChain(context.Context, *BlockChain) (*UpdateBlockChainResponse, error)
 	NewBlock(context.Context, *Block) (*NewBlockResponse, error)
 	NewTransaction(context.Context, *Trans) (*NewTransactionResponse, error)
+	RequestPeerList(context.Context, *PeerList) (*PeerList, error)
 	mustEmbedUnimplementedP2PServer()
 }
 
@@ -97,14 +109,17 @@ type UnimplementedP2PServer struct {
 func (UnimplementedP2PServer) RequestTailBlock(context.Context, *TailBlockRequest) (*Block, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RequestTailBlock not implemented")
 }
-func (UnimplementedP2PServer) DeliverBlockChain(context.Context, *BlockChain) (*DeliverBlockChainResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeliverBlockChain not implemented")
+func (UnimplementedP2PServer) UpdateBlockChain(context.Context, *BlockChain) (*UpdateBlockChainResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateBlockChain not implemented")
 }
 func (UnimplementedP2PServer) NewBlock(context.Context, *Block) (*NewBlockResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewBlock not implemented")
 }
 func (UnimplementedP2PServer) NewTransaction(context.Context, *Trans) (*NewTransactionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewTransaction not implemented")
+}
+func (UnimplementedP2PServer) RequestPeerList(context.Context, *PeerList) (*PeerList, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RequestPeerList not implemented")
 }
 func (UnimplementedP2PServer) mustEmbedUnimplementedP2PServer() {}
 
@@ -137,20 +152,20 @@ func _P2P_RequestTailBlock_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _P2P_DeliverBlockChain_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _P2P_UpdateBlockChain_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BlockChain)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(P2PServer).DeliverBlockChain(ctx, in)
+		return srv.(P2PServer).UpdateBlockChain(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: P2P_DeliverBlockChain_FullMethodName,
+		FullMethod: P2P_UpdateBlockChain_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(P2PServer).DeliverBlockChain(ctx, req.(*BlockChain))
+		return srv.(P2PServer).UpdateBlockChain(ctx, req.(*BlockChain))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -191,6 +206,24 @@ func _P2P_NewTransaction_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _P2P_RequestPeerList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PeerList)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(P2PServer).RequestPeerList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: P2P_RequestPeerList_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(P2PServer).RequestPeerList(ctx, req.(*PeerList))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // P2P_ServiceDesc is the grpc.ServiceDesc for P2P service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -203,8 +236,8 @@ var P2P_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _P2P_RequestTailBlock_Handler,
 		},
 		{
-			MethodName: "DeliverBlockChain",
-			Handler:    _P2P_DeliverBlockChain_Handler,
+			MethodName: "UpdateBlockChain",
+			Handler:    _P2P_UpdateBlockChain_Handler,
 		},
 		{
 			MethodName: "NewBlock",
@@ -213,6 +246,10 @@ var P2P_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "NewTransaction",
 			Handler:    _P2P_NewTransaction_Handler,
+		},
+		{
+			MethodName: "RequestPeerList",
+			Handler:    _P2P_RequestPeerList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
