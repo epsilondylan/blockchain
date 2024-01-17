@@ -104,6 +104,7 @@ func (s *P2P_Server) NewBlock(ctx context.Context, in *models.Block) (*models.Ne
         if err != nil {
             return &models.NewBlockResponse{ChainNeedUpdate: false}, err
         }
+        fmt.Println("new block added")
         go s.Broadcast(in)
         err = s.SaveChainToLocal()//每更新一个块就保存一次，非常蠢，值得优化
         if err != nil {

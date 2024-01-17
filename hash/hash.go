@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 	"sync/atomic"
+	"math/rand"
+	"time"
 )
 
 // Size The size of a SHA256 checksum in bytes.
@@ -17,8 +19,10 @@ var (
 
 // HashwithDifficulty ...
 func HashwithDifficulty(data []byte, d int) (result [Size]byte, nonce int64) {
+	rand.Seed(time.Now().UnixNano())
 	tmpDifficulty = d
-	for nonce = 1; ; nonce++ {
+	for nonce = int64(rand.Intn(10000)); ; nonce++ {
+		time.Sleep(5*time.Microsecond)
 		if atomic.LoadInt32(&stop) == 1 {
 			return result, 0
 		}

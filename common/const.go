@@ -4,7 +4,7 @@ import "time"
 
 const (
 	// HashDifficulty ...
-	HashDifficulty = 3
+	HashDifficulty = 4
 
 	// RSADefaultLenth ...
 	RSADefaultLenth = 1024

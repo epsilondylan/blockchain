@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"sync"
 	"blockchain/common"
+	"fmt"
 )
 
 var lock sync.Mutex
@@ -12,11 +13,22 @@ var lock sync.Mutex
 var singleChain *BlockChain
 
 func CreateChain() {
+	var GenesisTransPool TransPool
+	GenesisTrans := &Trans{
+		Account: "A",
+		Cipher:   "A",
+		Transaction: "1000000",
+	}
+	GenesisTransPool.TransPool = append(GenesisTransPool.TransPool, GenesisTrans)
+	tstr, err := json.Marshal(GenesisTransPool)
+	if err != nil {
+		fmt.Println(err)
+	}
 	singleChain = newChain()
 	Genesis := &Block{
 		PVHash: "0",
 		Timestamp: 0,
-		Data: "This is Genesis Block",
+		Data: string(tstr),
 		Index: 0,
 		Nonce: 0,
 		Hash: "0"}

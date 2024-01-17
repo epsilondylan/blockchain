@@ -25,12 +25,12 @@ type Block struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	PVHash    string `protobuf:"bytes,1,opt,name=PVHash,proto3" json:"PVHash,omitempty"`
-	Timestamp int64  `protobuf:"varint,2,opt,name=Timestamp,proto3" json:"Timestamp,omitempty"`
-	Data      string `protobuf:"bytes,3,opt,name=Data,proto3" json:"Data,omitempty"`
-	Index     int64  `protobuf:"varint,4,opt,name=Index,proto3" json:"Index,omitempty"`
-	Nonce     int64  `protobuf:"varint,5,opt,name=Nonce,proto3" json:"Nonce,omitempty"`
-	Hash      string `protobuf:"bytes,6,opt,name=Hash,proto3" json:"Hash,omitempty"`
+	PVHash    string `protobuf:"bytes,1,opt,name=PVHash,proto3" json:"PVHash"`
+	Timestamp int64  `protobuf:"varint,2,opt,name=Timestamp,proto3" json:"Timestamp"`
+	Data      string `protobuf:"bytes,3,opt,name=Data,proto3" json:"Data"`
+	Index     int64  `protobuf:"varint,4,opt,name=Index,proto3" json:"Index"`
+	Nonce     int64  `protobuf:"varint,5,opt,name=Nonce,proto3" json:"Nonce"`
+	Hash      string `protobuf:"bytes,6,opt,name=Hash,proto3" json:"Hash"`
 }
 
 func (x *Block) Reset() {

@@ -52,17 +52,21 @@ func (b *Block) IsValid(pvb *Block) bool {// 是否合法
 	if b.PVHash != pvb.Hash || (pvb.Index+1) != b.Index {// 判断前后区块是否合法
 		return false
 	}
+	fmt.Println("1")
 	//check the validity of the trans data
-	t, err := FormatTrans([]byte(b.Data))// 解析交易
-	if err != nil {		
-		return false// 解析失败
-	}
-	for _,transtemp := range t.TransPool{
-		err = transtemp.IsVaild()// 验证交易
-		if err != nil {
-			return false// 验证失败
-		}
-	}
+	// t, err := FormatTrans([]byte(b.Data))// 解析交易
+	// if err != nil {		
+	// 	return false// 解析失败
+	// }else {
+	// 	fmt.Println("2")
+	// // for _,transtemp := range t.TransPool{
+	// // 	err = transtemp.IsVaild()// 验证交易
+	// // 	if err != nil {
+	// // 		return false// 验证失败
+	// // 	}
+	// // }
+	// fmt.Println("3")
+	// }
 
 	tStr := strconv.FormatInt(b.Timestamp, 10)// 时间戳字符串
 	nStr := strconv.FormatInt(b.Index, 10)// index字符串
