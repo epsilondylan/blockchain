@@ -52,7 +52,7 @@ func (b *Block) IsValid(pvb *Block) bool {// 是否合法
 	if b.PVHash != pvb.Hash || (pvb.Index+1) != b.Index {// 判断前后区块是否合法
 		return false
 	}
-	fmt.Println("1")
+
 	//check the validity of the trans data
 	// t, err := FormatTrans([]byte(b.Data))// 解析交易
 	// if err != nil {		
@@ -79,16 +79,17 @@ func (b *Block) IsValid(pvb *Block) bool {// 是否合法
 func (b *Block) IsTempValid() bool {// 是否临时合法
 	var metaData string// 元数据
 	//check the validity of the trans data
-	t, err := FormatTrans([]byte(b.Data))// 解析交易
-	if err != nil {
-		return false
-	}
-	for _,transtemp := range t.TransPool{
-		err = transtemp.IsVaild()// 验证交易
-		if err != nil {
-			return false// 验证失败
-		}
-	}
+	// t, err := FormatTrans([]byte(b.Data))// 解析交易
+	// if err != nil {
+	// 	return false
+	// }
+	// for _,transtemp := range t.TransPool{
+	// 	err = transtemp.IsVaild()// 验证交易
+	// 	if err != nil {
+	// 		return false// 验证失败
+	// 	}
+	// }
+
 	tStr := strconv.FormatInt(b.Timestamp, 10)
 	nStr := strconv.FormatInt(b.Index, 10)
 	noStr := strconv.FormatInt(b.Nonce, 10)

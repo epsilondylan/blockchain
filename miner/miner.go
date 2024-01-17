@@ -33,9 +33,11 @@ func Mine(Server *p2p.P2P_Server){
         }
         //生成区块
         block := models.GenerateBlock(models.GetChainTail().Hash, transstring, models.GetChainLen())
+        
         err:=models.AppendChain(block)
         if err == nil{
             //广播区块
+            fmt.Println("广播区块")
             Server.Broadcast(block)
             //将区块写入本地
             err1:=Server.SaveChainToLocal()

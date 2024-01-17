@@ -122,13 +122,16 @@ func (s *P2P_Server) NewBlock(ctx context.Context, in *models.Block) (*models.Ne
 func (s *P2P_Server) NewTransaction(ctx context.Context,in *models.Trans)(*models.NewTransactionResponse,error){
     //检验交易是否已在链上存在
     //非常蠢，值得优化
-    for _,pvtrans:=range s.TransPool.TransPool{
-        if pvtrans==in{
-            return &models.NewTransactionResponse{},nil
-        }
-    }
+    // for _,pvtrans:=range s.TransPool.TransPool{
+    //     if pvtrans==in{
+    //         return &models.NewTransactionResponse{},nil
+    //     }
+    // }
     //以及因为管理账户太麻烦了，这里也不检查合法，反正没要求演示
+    
     s.NewTrans<-in
+    fmt.Println("trans received from")
+    fmt.Println(in.Account)
     return &models.NewTransactionResponse{},nil
 }
 
@@ -226,18 +229,19 @@ func (s *P2P_Server) SetupConnections()  error {
 
 
 func (s *P2P_Server) Broadcast(block *models.Block) {
+    fmt.Println(len(s.clients))
     for _, client := range s.clients {
         go func(client models.P2PClient) {
             res,err:=client.NewBlock(context.Background(),block)
             if err!=nil{
                 fmt.Println(err)
-            }
+            }else{
             if res.ChainNeedUpdate{
                 _,err:=client.UpdateBlockChain(context.Background(),models.FetchChain())
                 if err!=nil{
                     fmt.Println(err)
                 }
-            }
+            }}
         }(client)
     }
 }
