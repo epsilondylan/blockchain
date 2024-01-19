@@ -44,7 +44,7 @@ func Mine(Server *p2p.P2P_Server){
                         return
                     }
                     println("ok to get trans")
-                    TxHashesPool=append(TxHashesPool,string(temp))
+                    TxHashesPool=append(TxHashesPool,fmt.Sprintf("%x", temp))
                 default:
                     break
             }
@@ -60,7 +60,7 @@ func Mine(Server *p2p.P2P_Server){
             if (len(block.Hash) > 0){
                 //record filepath
                 data, err := os.ReadFile("utxoset.json")
-                newset := make([]utxo, 0)
+                newset := make([]*utxo, 0)
                 json.Unmarshal(data, &newset)
                 for i := 0; i < len(block.Hash); i++ {
                     falsearray := make(map[string]bool)
@@ -70,13 +70,12 @@ func Mine(Server *p2p.P2P_Server){
                         falsearray[trans.Tx_Outs[j]] = false
                     }
                     newutxo := utxo{spent: falsearray, hash: block.Hash[i]}
-                    newset = append(newset, newutxo)
+                    newset = append(newset, &newutxo)
                     data, err := json.Marshal(newset)
                     err = os.WriteFile("./utxoset.json", data, 0644)
                     if err != nil {
                        fmt.Println("failed to write to utxoset.json: %v", err)
                     }
-    
                 }
                 if err != nil {
                     fmt.Println("failed to write to utxoset.json: %v", err)

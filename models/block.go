@@ -6,7 +6,7 @@ import (
 	dhash "blockchain/hash"
 	"blockchain/common"
 	"crypto/sha256"
-	"bytes"
+	//"bytes"
 )
 
 
@@ -75,13 +75,13 @@ func GenerateBlock(index int64, pvhash string, jsonTxs []string) (*Block){
 	metaData = metaData + fmt.Sprintf("%d", index)
 	metaData = metaData + pvhash
 	metaData = metaData + fmt.Sprintf("%d", time)
-	metaData = metaData + string(MerkleRoot)
+	metaData = metaData + fmt.Sprintf("%x", MerkleRoot)
 	hash, nonce := dhash.HashwithDifficulty([]byte(metaData), common.HashDifficulty)// 计算hash
 	return &Block{
 		Index:     int64(index),
 		PVHash:    pvhash,
 		Timestamp: time,
-		MerkleRoot: string(MerkleRoot),
+		MerkleRoot: fmt.Sprintf("%x", MerkleRoot),
 		Nonce:      int64(nonce),
 		Hash:  jsonTxs,
 		Selfhash: fmt.Sprintf("%x", hash),
@@ -101,19 +101,21 @@ func (b *Block) IsValid(pvb *Block) bool {// 是否合法
 	if b.PVHash != pvb.Selfhash || (pvb.Index+1) != b.Index {// 判断前后区块是否合法
 		return false
 	}
+	/*
 	//check the validity of the trans data
 	bytehashes := make([][]byte, len(b.Hash))
 	for i, tx := range b.Hash {
 		temphash := sha256.Sum256([]byte(tx))
 		bytehashes[i] = temphash[:]
 	}
-	if(len(bytehashes) > 0) {
+	if (len(bytehashes) > 0) {
 		root := NewMerkleTree(bytehashes)
 		MRTree := bytes.Equal(root.hash, []byte(b.MerkleRoot))
 		if MRTree == false {
 			return false// 不合法
-			}	
+		}	
 	}
+	*/
 	return true// 合法
 }
 

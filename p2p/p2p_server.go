@@ -25,7 +25,7 @@ type P2P_Server struct {
     TransPool *models.TransPool
     NewTrans  chan *models.Trans
     clients []models.P2PClient
-    localset []utxo
+    localset []*utxo
 }
 
 func (s *P2P_Server) Init(){
@@ -111,6 +111,9 @@ func (s *P2P_Server) NewBlock(ctx context.Context, in *models.Block) (*models.Ne
             //record filepath
             data, err := os.ReadFile("utxoset.json")
             json.Unmarshal(data, &s.localset)
+            for k := 0; k < len(s.localset); k++ {
+                fmt.Println("localset:",s.localset[k])
+            }
             for i := 0; i < len(in.Hash); i++ {
                 falsearray := make(map[string]bool)
                 trans := models.FromJson([]byte(in.Hash[i]))
@@ -118,9 +121,13 @@ func (s *P2P_Server) NewBlock(ctx context.Context, in *models.Block) (*models.Ne
                 for j := 0; j < len(trans.Tx_Outs); j++ {
                     falsearray[trans.Tx_Outs[j]] = false
                 }
-                newutxo := utxo{spent: falsearray, hash: in.Hash[i]}
+                newutxo := &utxo{spent: falsearray, hash: in.Hash[i]}
                 s.localset = append(s.localset, newutxo)
                 data, err := json.Marshal(s.localset)
+                if err != nil {
+                    fmt.Println("failed to write to utxoset.json: %v", err)
+                    return &models.NewBlockResponse{ChainNeedUpdate: false}, err
+                }
                 err = os.WriteFile("./utxoset.json", data, 0644)
                 if err != nil {
                     return &models.NewBlockResponse{ChainNeedUpdate: false}, err
