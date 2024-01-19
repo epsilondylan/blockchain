@@ -22,7 +22,7 @@ func HashwithDifficulty(data []byte, d int) (result [Size]byte, nonce int64) {
 	rand.Seed(time.Now().UnixNano())
 	tmpDifficulty = d
 	for nonce = int64(rand.Intn(10000)); ; nonce++ {
-		time.Sleep(5*time.Microsecond)
+		time.Sleep(20*time.Microsecond)
 		if atomic.LoadInt32(&stop) == 1 {
 			return result, 0
 		}
@@ -33,7 +33,6 @@ func HashwithDifficulty(data []byte, d int) (result [Size]byte, nonce int64) {
 			return result, nonce
 		}
 	}
-	return
 }
 
 func difficulty(hash [Size]byte, d int) bool {

@@ -33,6 +33,7 @@ func main(){
     for _,peer:=range peerlist.Peers{
         conn,err:=grpc.Dial(fmt.Sprintf("%s:%d",peer.IP,peer.Port),grpc.WithInsecure())
         if err!=nil{
+            fmt.Println(err)
             continue
         }
         clients=append(clients,models.NewP2PClient(conn))
@@ -78,20 +79,27 @@ func main(){
             pubkeys=append(pubkeys,pubkey)
             payouts = append(payouts,int32(amount))
         }
+        time := time.Now().Unix()
+        empty_trans := &models.Trans{
+            NumInputs:  int32(numInputs),
+            NumOutputs: int32(numOutputs),
+            Tx_Ins:   txIns,
+            Signature: "",
+            PayOut: payouts,
+            Pubkey: myPubkey,
+            Tx_Outs:  pubkeys,
+            Locktime: time,
+        }
         fmt.Println("请输入本人账户")
         account := 0
         fmt.Scanln(&account)
-        myPubkey, cs, err := keygen.Signature(fmt.Sprintf("alice%d", account), []byte(""))
+        unsignedTrans, err := empty_trans.ToJson() 
+        myPubkey, sig, err := keygen.Signature(fmt.Sprintf("alice%d", account), unsignedTrans)
         if err != nil {
             fmt.Println("签名失败")
             return
         }
-        if (len(cs) < 0) {
-            fmt.Println("签名失败")
-            return
-        }
-        time := time.Now().Unix()
-        t:=&models.Trans{NumInputs:int32(numInputs),NumOutputs:int32(numOutputs),Tx_Ins:txIns,Tx_Outs:pubkeys,PayOut:payouts,Locktime:time,Pubkey:myPubkey,Signature:""}
+        t:=&models.Trans{NumInputs:int32(numInputs),NumOutputs:int32(numOutputs),Tx_Ins:txIns,Tx_Outs:pubkeys,PayOut:payouts,Locktime:time,Pubkey:myPubkey,Signature:sig}
         //广播交易
         for _,client:=range clients{
             client.NewTransaction(context.Background(),t)

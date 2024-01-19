@@ -11,13 +11,10 @@ import (
 
 
 type utxo struct {
-	pubkey string
-	hash   string
+    spent map[string]bool
+    hash  string
 }
 
-type utxoSet struct {
-	utxos []utxo
-}
 
 // GenerateBlock Generate a new block, it takes sometime and can be stopped by using the following function.
 // hash = Index+PVHash+Timestamp+MerkleRoot
@@ -100,7 +97,10 @@ func (b *Block) Interupt() bool {// 中断
 
 // IsValid return if the block is legal.
 func (b *Block) IsValid(pvb *Block) bool {// 是否合法
-
+	
+	if b.PVHash != pvb.Selfhash || (pvb.Index+1) != b.Index {// 判断前后区块是否合法
+		return false
+	}
 	//check the validity of the trans data
 	bytehashes := make([][]byte, len(b.Hash))
 	for i, tx := range b.Hash {
@@ -108,11 +108,11 @@ func (b *Block) IsValid(pvb *Block) bool {// 是否合法
 		bytehashes[i] = temphash[:]
 	}
 	if(len(bytehashes) > 0) {
-	root := NewMerkleTree(bytehashes)
-	MRTree := bytes.Equal(root.hash, []byte(b.MerkleRoot))
-	if MRTree == false {
-		return false// 不合法
-	}
+		root := NewMerkleTree(bytehashes)
+		MRTree := bytes.Equal(root.hash, []byte(b.MerkleRoot))
+		if MRTree == false {
+			return false// 不合法
+			}	
 	}
 	return true// 合法
 }

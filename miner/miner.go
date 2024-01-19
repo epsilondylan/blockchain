@@ -8,6 +8,7 @@ import(
     "net"
     p2p "blockchain/p2p"
     "google.golang.org/grpc"
+    "os"
 
 )
 /*
@@ -20,6 +21,14 @@ type Block struct {
 	TxHashes   []string
 }
 */
+
+type utxo struct {
+    spent map[string]bool
+    hash  string
+}
+
+
+
 func Mine(Server *p2p.P2P_Server){
     for{
 
@@ -48,6 +57,35 @@ func Mine(Server *p2p.P2P_Server){
         err:=models.AppendChain(block)
         if err == nil{
             //广播区块
+            if (len(block.Hash) > 0){
+                //record filepath
+                data, err := os.ReadFile("utxoset.json")
+                newset := make([]utxo, 0)
+                json.Unmarshal(data, &newset)
+                for i := 0; i < len(block.Hash); i++ {
+                    falsearray := make(map[string]bool)
+                    trans := models.FromJson([]byte(block.Hash[i]))
+                    fmt.Println("trans:",trans)
+                    for j := 0; j < len(trans.Tx_Outs); j++ {
+                        falsearray[trans.Tx_Outs[j]] = false
+                    }
+                    newutxo := utxo{spent: falsearray, hash: block.Hash[i]}
+                    newset = append(newset, newutxo)
+                    data, err := json.Marshal(newset)
+                    err = os.WriteFile("./utxoset.json", data, 0644)
+                    if err != nil {
+                       fmt.Println("failed to write to utxoset.json: %v", err)
+                    }
+    
+                }
+                if err != nil {
+                    fmt.Println("failed to write to utxoset.json: %v", err)
+                }
+                writedata,err := json.Marshal(newset)
+                os.WriteFile("./utxoset.json", writedata, 0644)
+                fmt.Println("writedata:",writedata)
+                fmt.Println("new block added")
+            }
             fmt.Println("广播区块")
             Server.Broadcast(block)
             //将区块写入本地

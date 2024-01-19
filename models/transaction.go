@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"crypto/sha256"
 	"encoding/base64"
+	"fmt"
 )
 
 
@@ -47,7 +48,7 @@ func (txOut *TxOut) ToJson() ([]byte, error) {
 		println("error in line 43")
 		return nil, err
 	}
-	println("txOutJson:",string(txOutJson))
+	println("txOutJson:",fmt.Sprintf("%s", txOutJson))
 	return txOutJson, nil
 }
 

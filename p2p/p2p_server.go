@@ -10,20 +10,12 @@ import (
     
     "blockchain/common"
     models "blockchain/models"
-    "crypto/rsa"
-    "crypto/x509"
-    "encoding/base64"
-    "crypto"
     "google.golang.org/grpc"
     
 )
 
-type utxoset struct {
-    utxos []utxo
-}
-
 type utxo struct {
-    spent bool
+    spent map[string]bool
     hash  string
 }
 
@@ -33,7 +25,7 @@ type P2P_Server struct {
     TransPool *models.TransPool
     NewTrans  chan *models.Trans
     clients []models.P2PClient
-    localset utxoset
+    localset []utxo
 }
 
 func (s *P2P_Server) Init(){
@@ -115,19 +107,34 @@ func (s *P2P_Server) NewBlock(ctx context.Context, in *models.Block) (*models.Ne
         if err != nil {
             return &models.NewBlockResponse{ChainNeedUpdate: false}, err
         }
-        //record filepath
-        utxofile := "./utxoset.json"
-        for i := 0; i < len(in.Hash); i++ {
-            newutxo := utxo{spent: false, hash: in.Hash[i]}
-            s.localset.utxos = append(s.localset.utxos, newutxo)
-            //record to local
-            data, err := json.Marshal(s.localset)
+        if (len(in.Hash) > 0){
+            //record filepath
+            data, err := os.ReadFile("utxoset.json")
+            json.Unmarshal(data, &s.localset)
+            for i := 0; i < len(in.Hash); i++ {
+                falsearray := make(map[string]bool)
+                trans := models.FromJson([]byte(in.Hash[i]))
+                fmt.Println("trans:",trans)
+                for j := 0; j < len(trans.Tx_Outs); j++ {
+                    falsearray[trans.Tx_Outs[j]] = false
+                }
+                newutxo := utxo{spent: falsearray, hash: in.Hash[i]}
+                s.localset = append(s.localset, newutxo)
+                data, err := json.Marshal(s.localset)
+                err = os.WriteFile("./utxoset.json", data, 0644)
+                if err != nil {
+                    return &models.NewBlockResponse{ChainNeedUpdate: false}, err
+                }
+
+            }
             if err != nil {
                 return &models.NewBlockResponse{ChainNeedUpdate: false}, err
             }
-            err = os.WriteFile(utxofile, data, 0644)
+            writedata,err := json.Marshal(s.localset)
+            os.WriteFile("./utxoset.json", writedata, 0644)
+            fmt.Println("writedata:",writedata)
+            fmt.Println("new block added")
         }
-        fmt.Println("new block added")
         go s.Broadcast(in)
         err = s.SaveChainToLocal()//每更新一个块就保存一次，非常蠢，值得优化
         if err != nil {
@@ -180,25 +187,35 @@ func (tx *Trans)txvalidate(unhashedMessages [][]byte, payers_pubkeys[]string) er
 }
 */
 func (s *P2P_Server) NewTransaction(ctx context.Context,in *models.Trans)(*models.NewTransactionResponse,error){
-    for _,pvtrans:=range s.TransPool.TransPool{
-        if models.Equal(pvtrans,in){
-            return &models.NewTransactionResponse{},nil
-        }
-     }
-     valid := make([]bool,int(in.NumInputs))
+    fmt.Println("receiced trans in 183 1")
+     valid:=make([]bool,in.NumInputs)
      for i:=0;i < int(in.NumInputs);i++{
-            valid[i]=false
-            for _,utxo:=range s.localset.utxos{
-                if utxo.hash==in.Tx_Ins[i]{
-                    if utxo.spent{
-                        return &models.NewTransactionResponse{},common.Error(common.ErrInvalidTrans)
+            valid[i]=true
+        }
+        data, err := os.ReadFile("./utxoset.json")
+        if err != nil {
+            fmt.Println("error in read utxoset")
+            fmt.Println(err)
+            return &models.NewTransactionResponse{},err
+        }
+        err = json.Unmarshal(data, &s.localset)
+     for i:=0;i < int(in.NumInputs);i++{
+            for k := 0; k < len(s.localset); k++ {
+                utxo := s.localset[k]
+                fmt.Println("utxo:",utxo)
+                trans := models.FromJson([]byte(utxo.hash))
+                fmt.Println("trans:",trans)
+                if trans.Signature == in.Tx_Ins[i]{
+                    println("find utxo")
+                    if utxo.spent[in.Pubkey]{
+                        valid[i]=false
+                        break
                     }
-                    utxo.spent=true
                     valid[i]=true
-                    break
                 }
             }
-            
+        }
+/*
             for _,pvTrans := range s.TransPool.TransPool{
                 if(pvTrans.Signature == in.Tx_Ins[i]){
                    beforesig := &models.Trans{
@@ -235,7 +252,13 @@ func (s *P2P_Server) NewTransaction(ctx context.Context,in *models.Trans)(*model
             return &models.NewTransactionResponse{},common.Error(common.ErrInvalidTrans)
         }
      }
-
+     */
+     for l:=0;l<len(valid);l++{
+        if !valid[l]{
+            fmt.Println("invalid trans attempt")
+            return &models.NewTransactionResponse{},common.Error(common.ErrInvalidTrans)
+        }
+    }
     s.NewTrans<- in
     fmt.Println("trans received from")
     return &models.NewTransactionResponse{},nil

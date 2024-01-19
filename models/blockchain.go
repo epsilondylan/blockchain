@@ -92,8 +92,13 @@ func CreateChain() {
 		fmt.Println("failed to sign transaction: %v", err)
 		return
 	}
-	stx := string(btx)
-	os.WriteFile(filepath, []byte(stx), 0644)
+	stx := fmt.Sprintf("%s", btx)
+	fmt.Println(stx)
+	err = os.WriteFile(filepath, []byte(stx), 0644)
+	if err != nil {
+		fmt.Println("failed to write to utxoset.json: %v", err)
+		return
+	}
 	fmt.Println("8")
 	Genesis := &Block{
 		Index:     0,
