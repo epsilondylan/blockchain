@@ -1,0 +1,62 @@
+syntax = "proto3";
+package p2p;
+option go_package = "/models";
+
+message Block{
+    int64 Index = 1;
+    string PVHash = 2;
+    int64 Timestamp = 3;
+    string MerkleRoot = 4;
+    int64 Nonce = 5;
+    repeated string Hash = 6;
+    string LocalHash = 7;
+}
+
+    
+message Trans{
+    int32 numInputs = 1; 
+    int32 numOutputs = 2;
+    repeated string Tx_Ins = 3;
+    repeated string Tx_Outs = 4;
+    repeated int32 PayOut = 5;
+    string signature = 6;
+    string pubkey = 7;
+    int64 Locktime = 8;
+}
+
+message BlockChain{
+    repeated Block Chain = 1;
+}
+
+message TailBlockRequest{}
+
+message UpdateBlockChainResponse{}
+
+message NewTransactionResponse{}
+
+message NewBlockResponse{
+    bool ChainNeedUpdate = 1;
+}
+
+message Peer{
+    string IP = 1;
+    int32 Port = 2;
+}
+
+message PeerList{
+    repeated Peer Peers = 1;
+}
+
+message TransPool{
+    repeated Trans TransPool = 1;
+}
+
+
+service P2P{
+    rpc RequestTailBlock(TailBlockRequest) returns(Block){}
+    rpc UpdateBlockChain(BlockChain) returns(UpdateBlockChainResponse){}
+    rpc NewBlock(Block) returns (NewBlockResponse){}
+    rpc NewTransaction(Trans) returns(NewTransactionResponse){}
+    rpc NewPeer(Peer) returns(PeerList){}
+}
+
